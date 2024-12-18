@@ -1,0 +1,171 @@
+# -*- coding: utf-8 -*-
+
+__Name__ = 'BoxCreator'
+__Comment__ = 'Creates a box with interlocked notches'
+__Author__ = 'christi'
+__Version__ = '1.3.7'
+__Date__ = '2023-01-03'
+__License__ = 'LGPL-3.0-or-later'
+__Web__ = 'https://forum.freecadweb.org/viewtopic.php?t=31795'
+__Wiki__ = ''
+__Icon__ = 'BoxCreator.svg'
+__Help__ = 'Try it out and play with it. It should be self explanatory'
+__Status__ = 'Beta'
+__Requires__ = 'FreeCAD >= v0.17'
+__Communication__ = 'https://forum.freecadweb.org/viewtopic.php?p=264483'
+__Files__ = 'BoxCreator.svg,boxcreator/__init__.py,boxcreator/boxcreator.py,boxcreator/boxcreator.ui'
+
+
+# z4 /home/spanner888/.local/share/FreeCAD/Macro/FreeCAD-macros/ObjectCreation/
+# >>> orig macro {NOT class} ALREADY skips intelocking if SIDE NOT PRESENT!!!
+
+
+
+import os
+
+import FreeCAD as app
+import FreeCADGui as gui
+from FreeCAD import Vector
+
+from boxcreator import boxcreator
+
+def createbox(interlocks=True):
+    box = boxcreator.create_box(materialWidth, boxWidth, boxHeight, boxLength, notchWidth,
+                                drawSides, overhangTop, overhangBottom, app.activeDocument(),
+                                interlocks)
+    # box = boxcreator.create_box(materialWidth, boxWidth, boxHeight, boxLength, notchWidth, drawSides, overhangTop, overhangBottom, app.activeDocument())
+    gui.Selection.clearSelection()
+    gui.Selection.addSelection(box)
+    gui.SendMsgToActiveView('ViewFit')
+
+    print(boxname)
+    if len(comment) > 1:
+        print(comment)
+    doc = App.ActiveDocument
+    # In BoxCreator macro, front = back & left = right ALWAYS,
+    # but top & bottom CAN be different due to overhangs.
+    # So not showing right or back parts.
+    parts = ["top", "bottom", "left", "front"]
+    for p in parts:
+        obj = doc.getObject(p)
+        if obj is not None:
+            print("    ", p, ": ", round(obj.Shape.BoundBox.XLength, 2),
+                        round(obj.Shape.BoundBox.YLength, 2),
+                        round(obj.Shape.BoundBox.ZLength, 2))
+
+    return box
+
+
+def flattenbox():
+    parts = ["top", "bottom", "left", "right", "front", "back"]
+    doc = App.ActiveDocument
+    for p in parts:
+        try:
+            obj = doc.getObject(p)
+            if obj is not None:
+                print(obj.Label)
+                # obj.Shape.Placement = App.Placement(App.Vector(0,0,0),App.Rotation(App.Vector(0,0,1),0))
+                # doc.getObject(p).Placement = App.Placement(App.Vector(0,0,0),App.Rotation(App.Vector(0,0,1),0))
+                doc.getObject(p).Placement.Base =App.Vector(0,0,0)
+        except:
+            pass
+    # gui.Selection.clearSelection()
+    # gui.Selection.addSelection(box)
+    gui.SendMsgToActiveView('ViewFit')
+    gui.ActiveDocument.update()
+
+
+
+notchWidth = 8.0    # not USED ATM NOT making interlocking as too many leak risks
+
+
+# Dims = external, not interior
+boxname = 'Irrigation cover rough'
+comment = ''
+materialWidth = 17.2
+boxWidth = 188
+boxHeight = 125
+boxLength = 430
+#Top, Bottom, Left, Right, Front, Back
+drawSides = [True, False, True, True, True, True]
+# L, R, F, B        << Bug if 3 sides overhang & NOT back, so add tiny back!
+overhangTop = [70, 70, 50, 0.01]
+overhangBottom = [0, 0, 0, 0]
+
+boxname = 'Irrigation cover refined_1'
+comment = ''
+materialWidth = 17.2
+boxWidth = 220
+boxHeight = 75
+boxLength = 340
+#Top, Bottom, Left, Right, Front, Back
+drawSides = [True, False, True, True, True, True]
+# L, R, F, B        << Bug if 3 sides overhang & NOT back, so add tiny back!
+overhangTop = [70, 70, 50, 0.01]
+overhangBottom = [0, 0, 0, 0]
+
+
+boxname = 'solar dual 12V TODO: reduce length by 40mm??'
+comment = ''
+materialWidth = 17.2
+boxWidth = 135      # is depth
+boxHeight = 300
+boxLength = 520
+#           Top, Bottom, Left, Right, Front, Back
+drawSides = [True, False, True, True, True, True]
+# drawSides = [True, True, True, True, True, True]
+# drawSides = [False, False, True, True, True, True]
+# L, R, F, B        << Bug if 3 sides overhang & NOT back, so add tiny back!
+overhangTop = [0, 30, 0, 60]
+overhangBottom = [0, 0, 0, 0]
+
+# --------------------------
+createbox(interlocks=False)
+# --------------------------
+
+
+
+boxname = 'solar 24V'
+comment = ''
+materialWidth = 17.2
+boxWidth = 135      # is depth
+boxHeight = 255
+boxLength = 450
+#           Top, Bottom, Left, Right, Front, Back
+drawSides = [True, False, True, True, True, True]
+# L, R, F, B        << Bug if 3 sides overhang & NOT back, so add tiny back!
+overhangTop = [0, 0, 0, 0]
+overhangBottom = [0, 0, 0, 0]
+
+
+boxname = 'grey box - eg Arlec IP54, box verticaly mounted, Length has lid opening clearances: RHS 55 & LHS 50'
+comment = 'UPDATE DESIRED SIDES - eg no front or back???'
+materialWidth = 17.2
+boxWidth = 130
+boxHeight = 230
+boxLength = 350 + 55 + 50
+#           Top, Bottom, Left, Right, Front, Back
+drawSides = [True, False, True, True, True, True]
+# L, R, F, B        << Bug if 3 sides overhang & NOT back, so add tiny back!
+overhangTop = [0, 0, 0, 0]
+overhangBottom = [0, 0, 0, 0]
+
+
+
+boxname = 'pool-pond electrics = TOP COVER ONLY?? TODO: extend width further???'
+comment = ''
+materialWidth = 17.2
+boxWidth = 430
+boxHeight = 500     # if have front hinged flap = else NOT USED
+boxLength = 900
+#           Top, Bottom, Left, Right, Front, Back
+drawSides = [True, False, True, True, False, False]
+# L, R, F, B        << Bug if 3 sides overhang & NOT back, so add tiny back!
+overhangTop = [0, 0, 0, 0]
+overhangBottom = [0, 0, 0, 0]
+
+# --------------------------
+# createbox(interlocks=True)
+# --------------------------
+
+# flattenbox()

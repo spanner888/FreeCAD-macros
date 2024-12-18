@@ -46,6 +46,7 @@ class BoxcreatorDialog():
         boxLength = self.form.doubleSpinBoxLength.value()
         notchWidth = self.form.doubleSpinBoxNotchWidth.value()
         materialWidth = self.form.doubleSpinBoxMaterialWidth.value()
+        interlocking = self.form.checkBoxInterlocking.isChecked()
         drawSides = [self.form.checkBoxTop.isChecked(),
                      self.form.checkBoxBottom.isChecked(),
                      self.form.checkBoxLeft.isChecked(),
@@ -65,7 +66,7 @@ class BoxcreatorDialog():
             # we bail out without doing anything
             return
 
-        box = boxcreator.create_box(materialWidth, boxWidth, boxHeight, boxLength, notchWidth, drawSides, overhangTop, overhangBottom, app.activeDocument())
+        box = boxcreator.create_box(materialWidth, boxWidth, boxHeight, boxLength, notchWidth, drawSides, overhangTop, overhangBottom, app.activeDocument(), interlocking)
         gui.Selection.clearSelection()
         gui.Selection.addSelection(box)
         gui.SendMsgToActiveView('ViewFit')
